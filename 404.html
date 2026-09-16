@@ -1,0 +1,67 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 - NOVAPLAY</title><link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp"><style>:root{--red:#e50914;--bg:#080a10;--card:#11151f;--muted:#9aa3b2}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top,#1d2433 0,#080a10 55%);color:#fff;font-family:Arial;padding:24px}.card{width:min(680px,100%);background:#11151f;border:1px solid #293246;border-radius:24px;padding:44px;text-align:center}.logo{width:88px;height:88px;object-fit:contain;border-radius:20px}.code{font-size:clamp(80px,18vw,150px);font-weight:900;line-height:.9;color:var(--red)}h1{font-size:30px;margin:18px 0 10px}p{color:var(--muted);line-height:1.6}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:26px}.btn{padding:13px 18px;border-radius:12px;text-decoration:none;font-weight:800;background:var(--red);color:#fff}.alt{background:#202838}.path{margin-top:20px;padding:12px;border-radius:10px;background:#080b11;color:#b8c1d1;word-break:break-all;font:12px monospace}.kettle-418{width:190px;max-width:70vw;height:190px;object-fit:contain;margin:0 auto 14px;display:none;filter:drop-shadow(0 14px 20px rgba(0,0,0,.4))}
+#error-details-418{display:none}
+</style>
+<style id="demo-popup-style">
+.demo-popup-permission{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(5px)}
+.demo-popup-box{width:min(480px,100%);background:#11151f;color:#fff;border:1px solid #30394c;border-radius:20px;padding:28px;text-align:center;font-family:Arial,Helvetica,sans-serif;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.demo-popup-box h2{margin:0 0 12px}.demo-popup-box p{color:#b8c1d1;line-height:1.55}.demo-popup-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.demo-popup-btn{border:0;border-radius:11px;padding:13px 18px;font-weight:800;cursor:pointer;background:#e50914;color:#fff}.demo-popup-btn.alt{background:#273044}
+</style>
+
+</head><body><main class="card"><img class="logo" src="https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp" alt="NOVAPLAY"><img id="kettle-418" class="kettle-418" src="https://raw.githubusercontent.com/NovaplayGO/novaimg/main/tetera.webp" alt="Una tetera">
+<div class="code" id="code">404</div><h1 id="title">Página no encontrada</h1><p id="text">La ruta solicitada no existe, fue movida o todavía no está disponible.</p>
+<div id="error-details-418">
+<p><strong>SOY UNA TETERA. LITERALMENTE.</strong></p>
+<p>No puedo procesar esta solicitud porque no soy un servidor. Soy una tetera.</p>
+<p>Mi trabajo consiste en calentar agua, hacer ruido cuando hiervo y juzgar silenciosamente tus decisiones. Procesar HTTP no estaba en el manual.</p>
+<p><strong>Resultado técnico:</strong> solicitud rechazada por exceso de tetera.</p>
+</div><div class="path" id="path"></div><div class="actions"><a class="btn" href="https://novaplaygo.github.io/">Ir al inicio</a><a class="btn alt" href="javascript:history.back()">Volver</a></div></main><script>
+document.getElementById('path').textContent=location.pathname;
+if(Math.random()<0.25){
+  document.getElementById('code').textContent='418';
+  document.getElementById('title').textContent='NO SE PUEDE PROCESAR ESTA SOLICITUD';
+  document.getElementById('text').style.display='none';
+  document.getElementById('kettle-418').style.display='block';
+  document.getElementById('error-details-418').style.display='block';
+}
+</script>
+<footer class="novaplay-footer">
+  <div>© 2026 NOVAPLAY TV</div>
+  <div>© 2010 - 2026 - MSGT. TODOS LOS DERECHOS RESERVADOS</div>
+</footer>
+<style>
+.novaplay-footer{
+  width:100%; text-align:center; padding:28px 16px 24px;
+  color:#aeb6c5; font-family:Arial,Helvetica,sans-serif;
+  font-size:13px; line-height:1.8; margin-top:40px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+</style>
+
+
+<script>
+function abrirNovaSports(){
+  const url='https://novaplaygo.github.io/NovaSports/';
+  const w=Math.min(1280,Math.max(800,Math.round(screen.availWidth*.9)));
+  const h=Math.min(820,Math.max(600,Math.round(screen.availHeight*.86)));
+  const left=Math.max(0,Math.round((screen.availWidth-w)/2));
+  const top=Math.max(0,Math.round((screen.availHeight-h)/2));
+  const win=window.open(url,'NOVASPORTS_LIVE','popup=yes,width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes');
+  if(win){win.focus();document.getElementById('demo-popup-permission')?.remove();}
+  else{document.getElementById('demo-popup-blocked').style.display='block';}
+}
+function pedirDemoPopup(){
+  const old=document.getElementById('demo-popup-permission'); if(old) old.remove();
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="demo-popup-permission" id="demo-popup-permission"><div class="demo-popup-box"><h2>ABRIR NOVASPORTS</h2><p>NOVAPLAY necesita abrir la DEMO en una ventana emergente. Al pulsar ABRIR NOVASPORTS, la acción se ejecuta directamente por tu clic para reducir el bloqueo del navegador.</p><div class="demo-popup-actions"><button class="demo-popup-btn" id="demo-popup-open">ABRIR NOVASPORTS</button><button class="demo-popup-btn alt" id="demo-popup-cancel">CANCELAR</button></div><p id="demo-popup-blocked" style="display:none;color:#ff9b9b;margin-top:16px">El navegador bloqueó la ventana. Permite ventanas emergentes para este sitio y vuelve a pulsar ABRIR NOVASPORTS.</p></div></div>');
+  document.getElementById('demo-popup-open').addEventListener('click',abrirNovaSports);
+  document.getElementById('demo-popup-cancel').addEventListener('click',()=>document.getElementById('demo-popup-permission').remove());
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('a[href="https://novaplaygo.github.io/NovaSports/"]').forEach(a=>{
+    a.addEventListener('click',e=>{e.preventDefault();pedirDemoPopup();});
+  });
+});
+</script>
+
+</body></html>

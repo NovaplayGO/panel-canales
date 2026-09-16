@@ -1,0 +1,16 @@
+{
+  "name": "NovaPlay Assets / NovaPlay Channels",
+  "short_name": "NovaPlay",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#e50914",
+  "background_color": "#080a10",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>NOVAPLAY | ADMIN. DE CANALES</title>
+    <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-hover: #b91c1c;
+            --bg: #080a10;
+            --card-bg: #11151f;
+            --input-bg: #1a1f2e;
+            --text: #ffffff;
+            --text-muted: #9aa3b2;
+            --border: #293246;
+            --success: #10b981;
+            --error: #ef4444;
+            --nav-height: 70px;
+            --sidebar-width: 280px;
+        }
+
+        * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
+        html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+        /* Navegación Premium */
+        .nova-nav { position: fixed; top: 0; width: 100%; z-index: 10000; background: rgba(0,0,0,0.7); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .nav-inner { max-width: 1400px; margin: auto; height: var(--nav-height); padding: 0 30px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; font-weight: 900; font-size: 22px; letter-spacing: -1px; }
+        .nav-brand img { width: 36px; height: 32px; border-radius: 8px; }
+
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 14px; font-weight: 600; transition: 0.2s; padding: 10px 15px; border-radius: 10px; }
+        .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .nav-links a.active { color: var(--primary); }
+
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; flex-direction: column; gap: 5px; z-index: 10001; }
+        .nav-toggle span { display: block; width: 25px; height: 3px; background: #fff; transition: 0.3s; border-radius: 2px; }
+
+        .btn-login-nav, .btn-logout {
+            background: var(--primary);
+            color: #fff !important;
+            font-weight: 800 !important;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            display: none;
+            transition: 0.2s;
+        }
+        .btn-login-nav:hover, .btn-logout:hover { transform: scale(1.05); background: var(--primary-hover); }
+        .btn-logout { background: var(--error); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
+
+        /* Dropdown de Administración Premium - BLINDAJE TOTAL V4 */
+        .admin-menu { position: relative; display: none; align-items: center; height: var(--nav-height); padding: 0 10px; }
+        .btn-admin { background: #fff; color: #000; font-weight: 900; border: none; cursor: pointer; padding: 10px 20px; border-radius: 12px; font-size: 13px; display: flex; align-items: center; gap: 10px; transition: 0.2s; position: relative; z-index: 10002; }
+        .btn-admin:hover { background: var(--primary); color: #fff; box-shadow: 0 0 20px rgba(229,9,20,0.4); }
+        .dropdown-content { position: absolute; top: 100%; right: 0; background: var(--card-bg); min-width: 260px; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; display: none; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 10001; margin-top: 5px; }
+        .dropdown-content::before { content: ""; position: absolute; top: -30px; left: 0; right: 0; height: 40px; background: transparent; }
+        .admin-menu:hover .dropdown-content { display: flex; }
+        .dropdown-content a { padding: 15px 20px; color: #fff !important; text-decoration: none !important; font-size: 13px !important; font-weight: 700 !important; border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.2s; display: flex; align-items: center; gap: 12px; }
+        .dropdown-content a i { width: 20px; color: var(--primary); text-align: center; }
+        .dropdown-content a:hover { background: rgba(255,255,255,0.05); padding-left: 25px; }
+        .dropdown-content .logout-link { color: var(--error) !important; border-bottom: none; }
+        .dropdown-content .logout-link i { color: var(--error); }
+
+        .app-container { display: flex; height: calc(100% - var(--nav-height)); margin-top: var(--nav-height); overflow: hidden; }
+
+        /* Sidebar */
+        #sidebar { width: var(--sidebar-width); background: var(--card-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+        #category-list { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        .category-item { padding: 12px 15px; margin-bottom: 5px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; color: var(--text-muted); font-weight: 600; font-size: 14px; }
+        .category-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .category-item.active { background: var(--primary); color: #fff; }
+        .category-item.special { border-bottom: 1px solid var(--border); margin-bottom: 15px; border-radius: 0; padding-bottom: 15px; }
+        .category-item .actions { opacity: 0; display: flex; gap: 5px; }
+        .category-item:hover .actions { opacity: 1; }
+
+        /* Main Content */
+        #main-content, #events-editor { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+        header { padding: 15px 30px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .search-box { position: relative; width: 300px; }
+        .search-box input { width: 100%; padding: 12px 15px 12px 40px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 14px; }
+        .search-box::before { content: "🔍"; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; font-size: 14px; }
+
+        .stats-container { display: flex; gap: 10px; margin-right: 15px; }
+        .stat-chip { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+        .stat-chip.success { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+        .stat-chip.inactive { background: rgba(154,163,178,0.1); color: var(--text-muted); border: 1px solid rgba(154,163,178,0.2); }
+
+        #channel-list { flex-grow: 1; padding: 25px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; align-content: start; }
+
+        /* Channel Card */
+        .channel-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 18px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: move; transition: 0.2s; position: relative; min-height: 100px; }
+        .channel-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .channel-card.selected { border-color: var(--primary); background: rgba(229, 9, 20, 0.05); }
+        .channel-card.inactive, .channel-card.inactive * { opacity: 0.5 !important; filter: grayscale(1) !important; }
+        .channel-card.inactive { border-style: dashed !important; background: rgba(0,0,0,0.4) !important; }
+        .channel-card.no-drag { cursor: default; }
+        .channel-logo { width: 50px; height: 50px; border-radius: 12px; background: #000; object-fit: contain; border: 1px solid var(--border); }
+        .channel-info { overflow: hidden; flex-grow: 1; }
+        .channel-info h3 { font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; font-weight: 700; }
+        .channel-info p { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .channel-cat-tag { position: absolute; top: 10px; right: 10px; font-size: 9px; background: var(--input-bg); padding: 3px 8px; border-radius: 6px; color: var(--primary); font-weight: 900; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.05); pointer-events: none; }
+
+        .channel-checkbox {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            z-index: 5;
+            opacity: 0.3;
+            transition: 0.2s;
+        }
+        .channel-card:hover .channel-checkbox, .channel-checkbox:checked { opacity: 1; }
+
+        /* Bulk Bar */
+        .bulk-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(17, 21, 31, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 15000;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        .bulk-bar.active { transform: translateX(-50%) translateY(0); }
+        .bulk-info { font-size: 14px; font-weight: 700; color: var(--primary); border-right: 1px solid var(--border); padding-right: 20px; }
+
+        /* Buttons */
+        .btn { padding: 12px 20px; border-radius: 12px; border: 0; cursor: pointer; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; white-space: nowrap; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+        .btn-ghost { background: var(--input-bg); color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-ghost:hover { background: var(--border); color: #fff; }
+        .btn-danger { background: var(--error); color: #fff; }
+        .btn-icon { background: none; border: none; color: inherit; cursor: pointer; padding: 6px; border-radius: 6px; font-size: 14px; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 20000; padding: 20px; }
+        .modal { background: var(--card-bg); width: 100%; max-width: 850px; max-height: 90vh; border-radius: 30px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+        .modal-header { padding: 25px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 30px; overflow-y: auto; }
+        .form-section { margin-bottom: 25px; padding: 20px; background: var(--input-bg); border-radius: 20px; border: 1px solid var(--border); }
+        .form-section h4 { color: var(--primary); margin-bottom: 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select, textarea { width: 100%; padding: 14px 18px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 14px; transition: 0.2s; font-family: inherit; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+
+        /* Icon Browser Styles */
+        .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; padding: 10px; }
+        .icon-item { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .icon-item:hover { border-color: var(--primary); transform: scale(1.05); }
+        .icon-item img { width: 100%; height: auto; border-radius: 6px; max-height: 60px; object-fit: contain; }
+        .icon-item span { display: block; font-size: 10px; color: var(--text-muted); margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Login */
+        #auth-view { position: fixed; inset: 0; background: var(--bg); z-index: 10001; display: flex; justify-content: center; align-items: center; }
+        .auth-card { width: 400px; padding: 50px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 35px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+        .auth-card input { width: 100%; padding: 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 14px; color: #fff; margin-bottom: 15px; font-size: 15px; }
+        .status { margin-top: 15px; padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 800; display: none; text-align: center; }
+        .status.error { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+        .form-group-auth { text-align: left; margin-bottom: 20px; }
+        .form-group-auth label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; }
+
+        /* Auth View Legacy Override */
+        #auth-view .form-group { text-align: left; margin-bottom: 20px; }
+        #auth-view .form-group label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; }
+
+        /* Toast Notification System */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 30000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-msg { pointer-events: auto; min-width: 300px; max-width: 450px; background: rgba(17, 21, 31, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 16px 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); animation: toast-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; transition: 0.3s; position: relative; overflow: hidden; }
+        .toast-msg::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+        .toast-msg.success::before { background: var(--success); }
+        .toast-msg.error::before { background: var(--error); }
+        .toast-msg.info::before { background: var(--primary); }
+        .toast-content { flex-grow: 1; font-size: 14px; font-weight: 600; }
+        .toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .toast-close:hover { color: #fff; }
+
+        @keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-out { transform: translateX(120%); opacity: 0; }
+
+        .hidden { display: none !important; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .sortable-ghost { opacity: 0.3; border: 2px dashed var(--primary); }
+
+        footer { padding: 60px 20px; background: #000; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .footer-text { font-size: 13px; color: #444; line-height: 1.8; font-weight: 600; }
+
+        @media (max-width: 900px) {
+            :root { --nav-height: 60px; --sidebar-width: 100%; }
+            .nav-inner { padding: 0 15px; }
+            .nav-toggle { display: flex; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
+                background: rgba(8, 10, 16, 0.98); backdrop-filter: blur(20px);
+                flex-direction: column; justify-content: center; align-items: center;
+                transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); gap: 20px; padding: 40px;
+                z-index: 9999;
+            }
+            .nav-links.active { right: 0; }
+            .nav-links a { font-size: 18px; width: 100%; text-align: center; padding: 15px; border-radius: 15px; }
+
+            .nav-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .nav-toggle.active span:nth-child(2) { opacity: 0; }
+            .nav-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+            .app-container { flex-direction: column; height: calc(100% - var(--nav-height)); overflow-y: auto; }
+
+            #sidebar {
+                width: 100%; border-right: none; border-bottom: 1px solid var(--border);
+                padding: 10px; flex-shrink: 0;
+            }
+            #category-list {
+                display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden;
+                padding: 5px; gap: 8px; scrollbar-width: none; -ms-overflow-style: none;
+            }
+            #category-list::-webkit-scrollbar { display: none; }
+            .category-item {
+                white-space: nowrap; flex-shrink: 0; padding: 8px 15px; margin-bottom: 0;
+                font-size: 13px; border: 1px solid var(--border);
+            }
+            .category-item.special { border-bottom: 1px solid var(--border); margin-bottom: 0; padding-bottom: 8px; border-radius: 12px; }
+            #draggable-categories { display: flex; gap: 8px; }
+            .category-item .actions { display: none; } /* Hide edit/delete on mobile horizontal list */
+
+            #main-content { height: auto; overflow: visible; }
+            header { padding: 15px; flex-direction: column; gap: 15px; background: var(--bg); }
+            .header-left { flex-direction: column; gap: 10px; }
+            .search-box { width: 100%; }
+            .stats-container { justify-content: space-around; width: 100%; }
+
+            .header-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+            .header-actions .btn { justify-content: center; padding: 10px; font-size: 12px; }
+            .header-actions .btn:last-child { grid-column: span 2; }
+
+            #channel-list {
+                padding: 10px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px; overflow: visible;
+            }
+            .channel-card { padding: 10px; gap: 10px; flex-direction: column; text-align: center; }
+            .channel-logo { width: 40px; height: 40px; }
+            .channel-info h3 { font-size: 13px; }
+            .channel-cat-tag { font-size: 8px; top: 5px; right: 5px; }
+
+            .bulk-bar { width: 95%; bottom: 10px; padding: 10px; gap: 8px; flex-wrap: wrap; }
+            .bulk-info { font-size: 12px; width: 100%; text-align: center; border: none; padding: 0; }
+            .bulk-bar .btn { padding: 8px 12px; font-size: 11px; flex: 1; }
+
+            .modal { width: 95%; border-radius: 20px; }
+            .modal-body { padding: 20px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nova-nav">
+    <div class="nav-inner">
+        <a class="nav-brand" href="https://novaplaygo.github.io/Dashboard/">
+            <img src="https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp" alt="Logo">
+            <div style="display: flex; flex-direction: column; line-height: 1;">
+                NOVAPLAY | ADMIN. DE CANALES
+                <span id="statusBadge" style="font-size: 8px; font-weight: 800; margin-top: 4px; letter-spacing: 0; opacity: 0.8;">⏳ CARGANDO...</span>
+            </div>
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <a href="https://novaplaygo.github.io/" style="color: var(--primary); font-weight: 800;">INICIO</a>
+            <a href="#" class="btn-login-nav" id="navLogin" onclick="location.reload()">INGRESAR</a>
+            <div class="admin-menu" id="adminMenu">
+                <button class="btn-admin"><i class="fas fa-user-shield"></i> PANEL</button>
+                <div class="dropdown-content">
+                    <a href="https://novaplaygo.github.io/Dashboard/"><i class="fas fa-chart-line"></i> Dashboard Central</a>
+                    <a href="https://novaplaygo.github.io/panel-canales/"><i class="fas fa-tv"></i> Admin. Canales</a>
+                    <a href="https://novaplaygo.github.io/NovaSecurity/"><i class="fas fa-shield-alt"></i> NovaSecurity</a>
+                    <a href="https://novaplaygo.github.io/novaimg/actualizar-icono/"><i class="fas fa-icons"></i> Gestión de Iconos</a>
+                    <a href="https://novaplaygo.github.io/novaimg/generador/"><i class="fas fa-magic"></i> Icon Studio</a>
+                    <a href="https://novaplaygo.github.io/novaepg/"><i class="fas fa-calendar-alt"></i> Buscador EPG ID</a>
+                    <a href="#" onclick="cerrarSesion(); return false;" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div id="auth-view" class="hidden">
+    <div class="auth-card">
+        <h2 style="margin-bottom:30px; font-weight:900; font-size: 28px;">Acceso al Panel</h2>
+        <div class="form-group-auth">
+            <label>Usuario</label>
+            <input type="text" id="username" placeholder="Usuario" autocomplete="username">
+        </div>
+        <div class="form-group-auth">
+            <label>Contraseña</label>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary" id="loginButton" style="width:100%; justify-content:center; padding: 18px; border-radius: 14px; font-weight: 900;" onclick="iniciarSesion()">ENTRAR A CANALES</button>
+        <div id="loginStatus" class="status"></div>
+    </div>
+</div>
+
+<script>
+    if (localStorage.getItem("novaplay_session_token")) {
+        document.getElementById("auth-view").classList.add("hidden");
+    }
+</script>
+
+<div class="app-container">
+    <aside id="sidebar">
+        <div id="category-list"></div>
+        <div style="padding: 20px; border-top: 1px solid var(--border);">
+            <button class="btn btn-ghost" style="width:100%; justify-content: center;" onclick="openCategoryModal()">
+                <i class="fas fa-plus-circle"></i> <span>Nueva Categoría</span>
+            </button>
+        </div>
+    </aside>
+
+    <main id="main-content">
+        <header>
+            <div class="header-left">
+                <div class="search-box">
+                    <input type="text" id="channel-search" placeholder="Buscar canal..." oninput="filterChannels()">
+                </div>
+                <div class="stats-container">
+                    <div class="stat-chip success">
+                        <i class="fas fa-check-circle"></i> <span id="active-count">0</span> <span>Activos</span>
+                    </div>
+                    <div class="stat-chip inactive">
+                        <i class="fas fa-times-circle"></i> <span id="inactive-count">0</span> <span>Inactivos</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions" style="display:flex; gap:12px;">
+                <button class="btn btn-primary" id="new-channel-btn" onclick="openChannelModal()">
+                    <i class="fas fa-plus"></i> <span>Nuevo Canal</span>
+                </button>
+                <button class="btn btn-ghost" onclick="downloadBackup()">
+                    <i class="fas fa-download"></i> <span>Backup</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveData()">
+                    <i class="fas fa-save"></i> <span>Guardar Cambios</span>
+                </button>
+            </div>
+        </header>
+
+        <div id="channel-list"></div>
+    </main>
+
+    <!-- Events Editor Section -->
+    <div id="events-editor" class="hidden" style="flex-grow: 1; padding: 25px; overflow-y: auto;">
+        <div style="max-width: 800px; margin: auto;">
+            <h2 style="margin-bottom: 20px; font-weight: 900;">Editor de Eventos y Avisos</h2>
+
+            <div class="form-section">
+                <h4>Configuración de Notificaciones</h4>
+                <div class="form-group">
+                    <label>Texto de la Notificación</label>
+                    <textarea id="event-marquee" placeholder="Escriba el mensaje aquí..."></textarea>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="event-active">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reproductor</label>
+                        <select id="event-show-player">
+                            <option value="true">Mostrar en TV/Player</option>
+                            <option value="false">Ocultar en TV/Player</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Evento</label>
+                        <input type="date" id="event-date">
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Versión</label>
+                        <input type="text" id="event-version" readonly style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Hasta</label>
+                        <input type="date" id="event-date-until">
+                    </div>
+                    <div class="form-group">
+                        <label>Hora Inicio</label>
+                        <input type="time" id="event-start-time">
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Hora Fin</label>
+                        <input type="time" id="event-end-time">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>V2 Pop-up (Aviso Emergente)</h4>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Título del Pop-up</label>
+                        <input type="text" id="popup-title" placeholder="Ej: Nueva Actualización">
+                    </div>
+                    <div class="form-group">
+                        <label>Pop-up Versión</label>
+                        <input type="text" id="popup-version" readonly style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Estado del Pop-up</label>
+                    <select id="popup-active">
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Párrafos (Contenido del Pop-up)</label>
+                    <textarea id="popup-paragraphs" style="height: 120px;" placeholder="Ingrese cada párrafo en una línea nueva..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 20px; font-size: 16px;" onclick="saveEventos()">
+                <i class="fas fa-save"></i> 💾 <span>Guardar Eventos</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Channel Modal -->
+<div id="channel-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modal-title" style="font-weight:900;">Editar Canal</h2>
+            <button class="btn-icon" onclick="closeModal('channel-modal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-channel-index">
+            <input type="hidden" id="edit-channel-cat-index">
+
+            <div class="form-section">
+                <h4>Información General</h4>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Nombre del Canal</label>
+                        <input type="text" id="ch-name" placeholder="Ej: HBO HD">
+                    </div>
+                    <div class="form-group">
+                        <label>Información / Evento (info)</label>
+                        <input type="text" id="ch-info" placeholder="Ej: EVENTOS">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Logo URL (icono)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="ch-icono" placeholder="https://...">
+                        <button class="btn btn-ghost" onclick="openIconBrowser()" title="Buscar en Galería">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="btn btn-ghost" onclick="document.getElementById('file-upload').click()" title="Subir de PC">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                        <input type="file" id="file-upload" accept="image/*" style="display:none;" onchange="uploadIcon()">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Estado (status)</label>
+                        <select id="ch-status">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>NSFW</label>
+                        <select id="ch-nsfw">
+                            <option value="NO">NO</option>
+                            <option value="YES">YES</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>Configuración EPG (Guía TV)</h4>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>EPG ID (xmltv_id)</label>
+                        <input type="text" id="ch-epg-id" placeholder="Ej: DisneyChannel.py">
+                    </div>
+                    <div class="form-group">
+                        <label>EPG URL (Opcional - Guía externa)</label>
+                        <input type="text" id="ch-epg-url" placeholder="Vacío = Usar Guía NovaPlay">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="margin: 0;">Fuentes de Stream</h4>
+                    <button class="btn btn-ghost" style="padding: 5px 10px;" onclick="toggleExtraField('url2-container')">
+                        <i class="fas fa-plus"></i> URL Extra
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>URL Principal</label>
+                    <input type="text" id="ch-url" placeholder="http://...">
+                </div>
+                <div id="url2-container" class="form-group" style="display: none;">
+                    <label>URL 2</label>
+                    <input type="text" id="ch-url2" placeholder="http://...">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>Configuración Avanzada</h4>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Referer</label>
+                        <input type="text" id="ch-referer" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label>Origin</label>
+                        <input type="text" id="ch-origin" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label>User Agent (User-Agent)</label>
+                        <input type="text" id="ch-user" placeholder="Mozilla/5.0...">
+                    </div>
+                </div>
+                <div class="form-section" style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0;">DRM & Seguridad</h4>
+                        <button class="btn btn-ghost" style="padding: 5px 10px;" onclick="toggleExtraField('drm2-container')">
+                            <i class="fas fa-plus"></i> DRM Extra
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo (type)</label>
+                        <select id="ch-type">
+                            <option value="CLEARKEY">CLEARKEY</option>
+                            <option value="widevine">widevine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>DRM License URI</label>
+                        <input type="text" id="ch-drm1" placeholder="https://...">
+                    </div>
+                    <div id="drm2-container" class="form-group" style="display: none;">
+                        <label>DRM License URI 2</label>
+                        <input type="text" id="ch-drm2" placeholder="https://...">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 10px;">
+                <button class="btn btn-ghost" style="margin-right: auto;" onclick="copyAndMoveChannel()">
+                    <i class="fas fa-copy"></i> Copiar y Mover
+                </button>
+                <button class="btn btn-danger" onclick="deleteChannel()">Eliminar</button>
+                <button class="btn btn-primary" onclick="saveChannel()">Guardar Canal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="category-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 450px;">
+        <div class="modal-header">
+            <h2 style="font-weight:900;">Categoría</h2>
+            <button class="btn-icon" onclick="closeModal('category-modal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-category-index">
+            <div class="form-group">
+                <label>Nombre de la Categoría (title)</label>
+                <input type="text" id="cat-title" placeholder="Ej: Deportes">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 18px;" onclick="saveCategory()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Icon Browser Modal -->
+<div id="icon-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 style="font-weight:900;">Galería de Iconos</h2>
+            <button class="btn-icon" onclick="closeModal('icon-modal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="icon-browser-body">
+            <div style="text-align: center; padding: 40px;" id="icon-loader">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 10px;">Cargando iconos...</p>
+            </div>
+            <div class="icon-grid" id="icon-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="novaModal">
+    <div class="modal" style="max-width: 450px;">
+        <div class="modal-header">
+            <h2 id="novaModalTitle" style="font-weight:900;">Confirmar</h2>
+        </div>
+        <div class="modal-body" style="text-align: center; padding-top: 10px;">
+            <p id="novaModalMessage" style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.5;"></p>
+            <div id="modalInputContainer" class="hidden">
+                <input type="text" id="modalInput" placeholder="...">
+                <select id="modalSelect" class="hidden"></select>
+            </div>
+            <div class="grid-2">
+                <button class="btn btn-ghost" id="novaModalCancel" style="justify-content: center;">CANCELAR</button>
+                <button class="btn btn-primary" id="novaModalConfirm" style="justify-content: center;">ACEPTAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions Bar -->
+<div id="bulk-bar" class="bulk-bar">
+    <div class="bulk-info" id="bulk-count">0 Seleccionados</div>
+    <button class="btn btn-ghost" onclick="bulkCopy()">
+        <i class="fas fa-copy"></i> <span>Copiar</span>
+    </button>
+    <button class="btn btn-ghost" onclick="bulkMoveCategory()">
+        <i class="fas fa-exchange-alt"></i> <span>Mover</span>
+    </button>
+    <button class="btn btn-ghost" onclick="bulkToggleStatus()">
+        <i class="fas fa-power-off"></i> <span>Estado</span>
+    </button>
+    <button class="btn btn-danger" onclick="bulkDelete()">
+        <i class="fas fa-trash"></i> <span>Eliminar</span>
+    </button>
+    <button class="btn-icon" onclick="clearSelection()" style="margin-left: 10px;">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<footer>
+    <div class="footer-text">
+        © 2026 NOVAPLAY TV<br>
+        © 2010 - 2026 - NOVAPLAY TV. TODOS LOS DERECHOS RESERVADOS
+    </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script>
+    const API_URL = 'https://mrghnngupolsgatcmevw.supabase.co/functions/v1/actualizar-canales';
+    const API_ICON_URL = 'https://mrghnngupolsgatcmevw.supabase.co/functions/v1/actualizar-icono';
+    const API_EVENTOS_URL = 'https://mrghnngupolsgatcmevw.supabase.co/functions/v1/actualizar-eventos';
+    const GITHUB_ICONS_API = 'https://api.github.com/repos/novaplaytv/novaimg/contents/icons';
+
+    let catalogo = [];
+    let eventosData = null;
+    let currentCategoryIndex = -1; // -1: Todos, -2: Inactivos, -3: EVENTOS
+    let sessionToken = localStorage.getItem("novaplay_session_token") || "";
+    let selectedChannels = []; // Array of {catIdx, chIdx}
+
+    function novaToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast-msg ${type}`;
+        let icon = 'fa-check-circle';
+        if (type === 'error') icon = 'fa-exclamation-circle';
+        if (type === 'info') icon = 'fa-info-circle';
+
+        toast.innerHTML = `
+            <i class="fas ${icon}" style="color: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : 'var(--primary)'}"></i>
+            <div class="toast-content">${message}</div>
+            <button class="toast-close" onclick="this.parentElement.classList.add('toast-out'); setTimeout(() => this.parentElement.remove(), 300)">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentElement) { toast.classList.add('toast-out'); setTimeout(() => toast.remove(), 300); } }, 5000);
+    }
+
+    async function fetchJSON(body, usarSesion = false, url = API_URL) {
+        const headers = { "Content-Type": "application/json" };
+        if (usarSesion && sessionToken) headers.Authorization = "Bearer " + sessionToken;
+        try {
+            const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+            const data = await response.json().catch(() => ({ error: "Respuesta inválida." }));
+            return { response, data };
+        } catch (e) { return { response: { ok: false }, data: { error: "Error de red." } }; }
+    }
+
+    async function restaurarSesion() {
+        if (sessionToken) {
+            UI_MostrarPanel();
+            await loadData();
+        } else { UI_MostrarLogin(); }
+    }
+
+    function UI_MostrarPanel() {
+        document.getElementById("auth-view").classList.add("hidden");
+        document.getElementById("navLogin").style.display = 'none';
+        document.getElementById("adminMenu").style.display = 'flex';
+    }
+
+    function UI_MostrarLogin() {
+        document.getElementById("auth-view").classList.remove("hidden");
+        document.getElementById("navLogin").style.display = 'block';
+        document.getElementById("adminMenu").style.display = 'none';
+    }
+
+    async function iniciarSesion() {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const btn = document.getElementById("loginButton");
+        if (!username || !password) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFICANDO...';
+        const { response, data } = await fetchJSON({ action: "login", username, password });
+
+        if (response.ok && data.token) {
+            sessionToken = data.token;
+            localStorage.setItem("novaplay_session_token", sessionToken);
+            UI_MostrarPanel();
+            await loadData();
+        } else {
+            const el = document.getElementById("loginStatus");
+            el.className = "status error";
+            el.textContent = "Acceso denegado.";
+            el.style.display = "block";
+            btn.disabled = false;
+            btn.textContent = 'ENTRAR A CANALES';
+        }
+    }
+
+    function cerrarSesion() {
+        openModal("Cerrar Sesión", "¿Estás seguro que deseas salir de la Administración de Canales?").then(confirm => {
+            if (confirm) {
+                localStorage.removeItem("novaplay_session_token");
+                location.reload();
+            }
+        });
+    }
+
+    async function uploadIcon() {
+        const fileInput = document.getElementById('file-upload');
+        const file = fileInput.files[0];
+        if (!file) return;
+        const iconInput = document.getElementById('ch-icono');
+        const originalPlaceholder = iconInput.placeholder;
+        iconInput.placeholder = "⏳ SUBIENDO...";
+        iconInput.value = "";
+        const fd = new FormData();
+        fd.append("action", "actualizar");
+        fd.append("canal", "auto.webp");
+        fd.append("imagen", file);
+        try {
+            const res = await fetch(API_ICON_URL, { method: "POST", headers: { "Authorization": "Bearer " + sessionToken }, body: fd });
+            const data = await res.json();
+            if (res.ok && data.url) { iconInput.value = data.url; }
+            else { novaToast("Error al subir imagen: " + (data.error || "Desconocido"), "error"); }
+        } catch (e) { novaToast("Error de red.", "error"); }
+        finally { iconInput.placeholder = originalPlaceholder; fileInput.value = ""; }
+    }
+
+    async function loadData() {
+        const { response, data } = await fetchJSON({ action: "obtener_json" }, true);
+        if (response.ok && data.success) {
+            catalogo = data.json || [];
+            catalogo.forEach(cat => {
+                (cat.items || []).forEach(ch => {
+                    if (ch.user && !ch['User-Agent']) { ch['User-Agent'] = ch.user; delete ch.user; }
+                });
+            });
+            renderCategories();
+
+            // Restaurar última posición (Solo mientras la pestaña esté abierta)
+            const lastCat = sessionStorage.getItem("last_cat_idx");
+            if (lastCat !== null) {
+                selectCategory(parseInt(lastCat));
+            }
+        } else {
+            novaToast('Error al cargar datos: ' + (data.error || 'Sesión expirada'), 'error');
+            if (response.status === 401) cerrarSesion();
+        }
+    }
+
+    async function saveData() {
+        // Limpieza profunda antes de guardar
+        const dataToSave = JSON.parse(JSON.stringify(catalogo));
+
+        // FASE ORDENACIÓN (v87): Definir el orden estricto de las llaves solicitado
+        const keyOrder = [
+            "name", "epg_id", "info", "CH-events", "flow", "NSFW", "status", "url", "url2",
+            "type", "drm_license_uri", "drm_license_uri2", "Origin", "Referer", "User-Agent", "icono"
+        ];
+
+        dataToSave.forEach(cat => {
+            if (cat.items) {
+                cat.items = cat.items.map(ch => {
+                    // FASE REPARACIÓN (v86): Auto-detección masiva de canales Flow (Modo Estricto)
+                    if (ch.url && ch.url.startsWith("https://flow-cdn-gcp.app.flow.com.ar/")) {
+                        ch.flow = "yes";
+                    } else {
+                        delete ch.flow; // Eliminar si la URL no corresponde
+                    }
+
+                    // Eliminar 'canal' y campos vacíos
+                    delete ch.canal;
+
+                    // Crear un nuevo objeto con las llaves en el orden correcto
+                    const orderedCh = {};
+
+                    // 1. Insertar llaves en el orden solicitado si existen
+                    keyOrder.forEach(key => {
+                        if (ch[key] !== "" && ch[key] !== null && ch[key] !== undefined) {
+                            orderedCh[key] = ch[key];
+                        }
+                    });
+
+                    // 2. Insertar cualquier otra llave que no esté en la lista de orden (ej: url2, drm2, etc.)
+                    Object.keys(ch).forEach(key => {
+                        if (!keyOrder.includes(key) && ch[key] !== "" && ch[key] !== null && ch[key] !== undefined) {
+                            orderedCh[key] = ch[key];
+                        }
+                    });
+
+                    return orderedCh;
+                });
+            }
+        });
+
+        const { response, data } = await fetchJSON({ action: "guardar_json", content: JSON.stringify(dataToSave, null, 2) }, true);
+        if (response.ok && data.success) { novaToast('Datos guardados correctamente', 'success'); }
+        else { novaToast('Error al guardar: ' + (data.error || 'Desconocido'), 'error'); }
+    }
+
+    function downloadBackup() {
+        const dataToBackup = JSON.parse(JSON.stringify(catalogo));
+        dataToBackup.forEach(cat => {
+            if (cat.items) {
+                cat.items.forEach(ch => {
+                    delete ch.canal;
+                    Object.keys(ch).forEach(key => {
+                        if (ch[key] === "" || ch[key] === null || ch[key] === undefined) {
+                            delete ch[key];
+                        }
+                    });
+                });
+            }
+        });
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToBackup, null, 4));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "novaplay_backup_" + new Date().toISOString().slice(0, 10) + ".json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    // --- Events Editor Logic ---
+    async function loadEventos() {
+        const { response, data } = await fetchJSON({ action: "obtener_eventos" }, true, API_EVENTOS_URL);
+        if (response.ok && data.success) {
+            eventosData = data.eventos || {};
+            renderEventsEditor();
+        } else { novaToast('Error al cargar datos', 'error'); }
+    }
+
+    function renderEventsEditor() {
+        if (!eventosData) return;
+        document.getElementById('event-marquee').value = eventosData.texto || '';
+        document.getElementById('event-active').value = String(eventosData.activo) || 'false';
+        document.getElementById('event-show-player').value = String(eventosData.mostrarEnReproductor) || 'false';
+        document.getElementById('event-version').value = eventosData.eventoVersion || '0';
+        document.getElementById('event-date').value = eventosData.fecha || '';
+        document.getElementById('event-date-until').value = eventosData['fecha-hasta'] || '';
+        document.getElementById('event-start-time').value = eventosData.desde || '';
+        document.getElementById('event-end-time').value = eventosData.hasta || '';
+
+        const v2 = eventosData.v2 || {};
+        document.getElementById('popup-title').value = v2.titulo || '';
+        document.getElementById('popup-version').value = v2.popupVersion || '0';
+        document.getElementById('popup-active').value = String(v2.activado) || 'false';
+        document.getElementById('popup-paragraphs').value = (v2.parrafos || []).join('\n') || '';
+    }
+
+    async function saveEventos() {
+        if (!eventosData) return;
+        const texto = document.getElementById('event-marquee').value.trim();
+        const activo = document.getElementById('event-active').value === 'true';
+        const mostrarEnReproductor = document.getElementById('event-show-player').value === 'true';
+        const fecha = document.getElementById('event-date').value;
+        const fecha_hasta = document.getElementById('event-date-until').value;
+        const desde = document.getElementById('event-start-time').value;
+        const hasta = document.getElementById('event-end-time').value;
+        const titulo = document.getElementById('popup-title').value.trim();
+        const activado = document.getElementById('popup-active').value === 'true';
+        const parrafos = document.getElementById('popup-paragraphs').value.trim().split('\n').filter(p => p.trim() !== '');
+
+        const marqueeChanged = texto !== (eventosData.texto || '') ||
+                               activo !== (eventosData.activo || false) ||
+                               mostrarEnReproductor !== (eventosData.mostrarEnReproductor || false) ||
+                               fecha !== (eventosData.fecha || '') ||
+                               fecha_hasta !== (eventosData['fecha-hasta'] || '') ||
+                               desde !== (eventosData.desde || '') ||
+                               hasta !== (eventosData.hasta || '');
+
+        const v2 = eventosData.v2 || {};
+        const popupChanged = titulo !== (v2.titulo || '') || activado !== (v2.activado || false) || JSON.stringify(parrafos) !== JSON.stringify(v2.parrafos || []);
+        if (!marqueeChanged && !popupChanged) { return novaToast('No se detectaron cambios', 'info'); }
+        const newEventos = {
+            ...eventosData, texto, activo, mostrarEnReproductor,
+            eventoVersion: marqueeChanged ? (parseInt(eventosData.eventoVersion) || 0) + 1 : (parseInt(eventosData.eventoVersion) || 0), fecha, "fecha-hasta": fecha_hasta, desde, hasta,
+            v2: { ...v2, titulo, activado, popupVersion: popupChanged ? (parseInt(v2.popupVersion) || 0) + 1 : (parseInt(v2.popupVersion) || 0), parrafos }
+        };
+        const { response, data } = await fetchJSON({ action: "guardar_eventos", eventos: newEventos }, true, API_EVENTOS_URL);
+        if (response.ok && data.success) { novaToast('Notificaciones actualizadas con éxito', 'success'); eventosData = newEventos; renderEventsEditor(); }
+        else { novaToast('Error al guardar notificaciones', 'error'); }
+    }
+
+    function updateStats() {
+        let active = 0, inactive = 0;
+        catalogo.forEach(cat => { (cat.items || []).forEach(ch => { if (String(ch.status) === 'true') active++; else inactive++; }); });
+        document.getElementById('active-count').textContent = active;
+        document.getElementById('inactive-count').textContent = inactive;
+    }
+
+    function renderCategories() {
+        const list = document.getElementById('category-list');
+        list.innerHTML = '';
+        const items = [
+            { id: -1, title: 'Todos', icon: 'fa-layer-group', special: false },
+            { id: -2, title: 'Inactivos', icon: 'fa-times-circle', special: false },
+            { id: -3, title: 'EVENTOS', icon: 'fa-calendar-alt', special: true }
+        ];
+        items.forEach(it => {
+            const div = document.createElement('div');
+            div.className = `category-item ${currentCategoryIndex === it.id ? 'active' : ''} ${it.special ? 'special' : ''}`;
+            div.innerHTML = `<span><i class="fas ${it.icon}"></i> ${it.title}</span>`;
+            div.onclick = () => selectCategory(it.id);
+            list.appendChild(div);
+        });
+        const dragList = document.createElement('div');
+        dragList.id = 'draggable-categories';
+        list.appendChild(dragList);
+        catalogo.forEach((cat, index) => {
+            const item = document.createElement('div');
+            item.className = `category-item ${index === currentCategoryIndex ? 'active' : ''}`;
+            item.innerHTML = `
+                <span><i class="fas fa-folder"></i> ${cat.title}</span>
+                <div class="actions">
+                    <button class="btn-icon" onclick="copyCategory(${index})" title="Copiar Categoría"><i class="fas fa-copy"></i></button>
+                    <button class="btn-icon" onclick="openCategoryModal(${index})" title="Editar"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" onclick="deleteCategory(${index})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                </div>`;
+            item.onclick = (e) => { if (!e.target.closest('.actions')) selectCategory(index); };
+            dragList.appendChild(item);
+        });
+        if (!dragList._sortable) {
+            dragList._sortable = new Sortable(dragList, {
+                animation: 150,
+                onEnd: (evt) => {
+                    const movedItem = catalogo.splice(evt.oldIndex, 1)[0];
+                    catalogo.splice(evt.newIndex, 0, movedItem);
+                    renderCategories();
+                }
+            });
+        }
+        if (currentCategoryIndex !== -3) renderChannels();
+        updateStats();
+    }
+
+    function selectCategory(index) {
+        currentCategoryIndex = index;
+        sessionStorage.setItem("last_cat_idx", index);
+        clearSelection();
+        if (index === -3) {
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('events-editor').classList.remove('hidden');
+            loadEventos();
+        } else {
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('events-editor').classList.add('hidden');
+            renderChannels();
+        }
+        renderCategories();
+    }
+
+    function renderChannels(filter = '') {
+        const list = document.getElementById('channel-list');
+        list.innerHTML = '';
+        let channelsToRender = [];
+        if (currentCategoryIndex === -1) {
+            catalogo.forEach((cat, catIdx) => { (cat.items || []).forEach((ch, chIdx) => { channelsToRender.push({ ...ch, catIdx, chIdx, catTitle: cat.title }); }); });
+            document.getElementById('new-channel-btn').disabled = true;
+        } else if (currentCategoryIndex === -2) {
+            catalogo.forEach((cat, catIdx) => { (cat.items || []).forEach((ch, chIdx) => { if (String(ch.status) !== 'true') channelsToRender.push({ ...ch, catIdx, chIdx, catTitle: cat.title }); }); });
+            document.getElementById('new-channel-btn').disabled = true;
+        } else if (currentCategoryIndex >= 0) {
+            const cat = catalogo[currentCategoryIndex];
+            if (cat) (cat.items || []).forEach((ch, chIdx) => { channelsToRender.push({ ...ch, catIdx: currentCategoryIndex, chIdx }); });
+            document.getElementById('new-channel-btn').disabled = false;
+        }
+
+        channelsToRender.forEach((ch) => {
+            if (filter && !ch.name.toLowerCase().includes(filter.toLowerCase())) return;
+            const card = document.createElement('div');
+            const isSelected = selectedChannels.some(s => s.catIdx === ch.catIdx && s.chIdx === ch.chIdx);
+            const isInactive = String(ch.status) === 'false';
+            card.className = 'channel-card' +
+                             (currentCategoryIndex < 0 ? ' no-drag' : '') +
+                             (isSelected ? ' selected' : '') +
+                             (isInactive ? ' inactive' : '');
+
+            card.innerHTML = `
+                <input type="checkbox" class="channel-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectChannel(event, ${ch.catIdx}, ${ch.chIdx})">
+                <img src="${ch.icono}" class="channel-logo" onerror="this.src='https://via.placeholder.com/50?text=?'">
+                <div class="channel-info">
+                    <h3>${ch.name}</h3>
+                    <p>${String(ch.status) === 'true' ? 'Activo' : 'Inactivo'}</p>
+                    ${ch.info ? `<p style="font-size: 10px; color: var(--primary); margin-top: 4px; font-weight: 800; text-transform: uppercase;">${ch.info}</p>` : ''}
+                </div>
+                ${currentCategoryIndex < 0 ? `<span class="channel-cat-tag">${ch.catTitle}</span>` : ''}
+                <button class="btn-icon" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.4); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 1; z-index: 10;" onclick="openChannelModal(${ch.chIdx}, ${ch.catIdx})">
+                    <i class="fas fa-edit"></i>
+                </button>
+            `;
+            list.appendChild(card);
+        });
+
+        if (!list._sortable) {
+            list._sortable = new Sortable(list, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                filter: '.channel-checkbox',
+                onEnd: (evt) => {
+                    if (currentCategoryIndex < 0) return;
+                    const chs = catalogo[currentCategoryIndex].items;
+                    const movedItem = chs.splice(evt.oldIndex, 1)[0];
+                    chs.splice(evt.newIndex, 0, movedItem);
+                }
+            });
+        }
+        list._sortable.option("disabled", currentCategoryIndex < 0);
+        updateStats();
+    }
+
+    // --- Bulk Action Logic ---
+    function toggleSelectChannel(event, catIdx, chIdx) {
+        if (event.target.checked) { selectedChannels.push({ catIdx, chIdx }); }
+        else { selectedChannels = selectedChannels.filter(s => !(s.catIdx === catIdx && s.chIdx === chIdx)); }
+        updateBulkBar();
+        renderChannels(document.getElementById('channel-search').value);
+    }
+
+    function updateBulkBar() {
+        const bar = document.getElementById('bulk-bar');
+        const count = document.getElementById('bulk-count');
+        if (selectedChannels.length > 0) {
+            bar.classList.add('active');
+            count.textContent = `${selectedChannels.length} Seleccionados`;
+        } else { bar.classList.remove('active'); }
+    }
+
+    function clearSelection() { selectedChannels = []; updateBulkBar(); renderChannels(document.getElementById('channel-search').value); }
+
+    async function bulkMoveCategory() {
+        if (selectedChannels.length === 0) return;
+
+        const catOptions = catalogo.map((c, i) => ({ value: i, text: c.title }));
+        const target = await openModal("Mover Canales", `Seleccione la categoría de destino para los ${selectedChannels.length} canales:`, "select", catOptions);
+
+        if (target === false) return;
+        const targetIdx = parseInt(target);
+        if (isNaN(targetIdx) || !catalogo[targetIdx]) return;
+
+        // Process in reverse to avoid index shifts if multiple from same cat
+        selectedChannels.sort((a, b) => b.chIdx - a.chIdx).forEach(s => {
+            const ch = catalogo[s.catIdx].items.splice(s.chIdx, 1)[0];
+            catalogo[targetIdx].items.push(ch);
+        });
+        clearSelection();
+        renderCategories();
+        novaToast(`${selectedChannels.length} canales movidos a "${catalogo[targetIdx].title}"`);
+    }
+
+    function bulkCopy() {
+        if (selectedChannels.length === 0) return;
+
+        // Agrupar por categoría para procesar correctamente
+        const grouped = {};
+        selectedChannels.forEach(s => {
+            if (!grouped[s.catIdx]) grouped[s.catIdx] = [];
+            grouped[s.catIdx].push(s.chIdx);
+        });
+
+        Object.keys(grouped).forEach(catIdx => {
+            // Ordenar índices de mayor a menor para no romper la posición al insertar
+            const indices = grouped[catIdx].sort((a, b) => b - a);
+            const items = catalogo[catIdx].items;
+
+            indices.forEach(chIdx => {
+                const original = items[chIdx];
+                const copy = JSON.parse(JSON.stringify(original));
+                // Insertar justo al lado (derecha)
+                items.splice(chIdx + 1, 0, copy);
+            });
+        });
+
+        clearSelection();
+        renderChannels();
+        novaToast("Canales duplicados correctamente.");
+    }
+
+    function bulkToggleStatus() {
+        if (selectedChannels.length === 0) return;
+        selectedChannels.forEach(s => {
+            const ch = catalogo[s.catIdx].items[s.chIdx];
+            ch.status = String(ch.status) === 'true' ? 'false' : 'true';
+        });
+        clearSelection();
+        renderChannels();
+    }
+
+    async function bulkDelete() {
+        if (selectedChannels.length === 0) return;
+        if (!(await openModal("Eliminar Canales", `¿Estás seguro de eliminar los ${selectedChannels.length} canales seleccionados?`))) return;
+
+        // Preparar lista de iconos únicos para posible borrado
+        const iconosABorrar = new Set();
+
+        selectedChannels.forEach(s => {
+            const ch = catalogo[s.catIdx].items[s.chIdx];
+            const iconoUrl = ch.icono || "";
+            const fileName = iconoUrl.split('/').pop();
+
+            if (fileName && fileName.toLowerCase().endsWith('.webp') && iconoUrl.includes('novaimg/icons/')) {
+                // Contar usos globales
+                let usos = 0;
+                catalogo.forEach(cat => {
+                    (cat.items || []).forEach(item => {
+                        if (item.icono === iconoUrl) usos++;
+                    });
+                });
+
+                // Contar cuántos de esos usos están en la selección actual
+                let usosEnSeleccion = 0;
+                selectedChannels.forEach(sel => {
+                    if (catalogo[sel.catIdx].items[sel.chIdx].icono === iconoUrl) usosEnSeleccion++;
+                });
+
+                // Si todos los canales que usan este icono van a ser borrados
+                if (usos === usosEnSeleccion) {
+                    iconosABorrar.add(fileName);
+                }
+            }
+        });
+
+        if (iconosABorrar.size > 0) {
+            if (await openModal("Limpieza de Galería", `Se han detectado ${iconosABorrar.size} iconos que quedarán huérfanos. ¿Deseas eliminarlos también de GitHub?`)) {
+                for (const file of iconosABorrar) {
+                    await fetchJSON({
+                        action: "seguridad_eliminar_archivo_github",
+                        repo: "novaimg",
+                        path: "icons/" + file
+                    }, true);
+                }
+                novaToast(`${iconosABorrar.size} iconos eliminados de la galería.`);
+            }
+        }
+
+        // Group by cat and delete in reverse ch order
+        const grouped = {};
+        selectedChannels.forEach(s => { if (!grouped[s.catIdx]) grouped[s.catIdx] = []; grouped[s.catIdx].push(s.chIdx); });
+        Object.keys(grouped).forEach(catIdx => {
+            grouped[catIdx].sort((a, b) => b - a).forEach(chIdx => { catalogo[catIdx].items.splice(chIdx, 1); });
+        });
+        clearSelection();
+        renderChannels();
+        novaToast("Canales eliminados correctamente.");
+    }
+
+    // --- Icon Browser Logic ---
+    async function openIconBrowser() {
+        document.getElementById('icon-modal').style.display = 'flex';
+        document.getElementById('icon-loader').style.display = 'block';
+        document.getElementById('icon-grid').innerHTML = '';
+        try {
+            const res = await fetch(GITHUB_ICONS_API);
+            const data = await res.json();
+            document.getElementById('icon-loader').style.display = 'none';
+            const grid = document.getElementById('icon-grid');
+            data.filter(item => item.type === 'file' && item.name.match(/\.(png|jpe?g|webp|svg)$/i)).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'icon-item';
+                div.innerHTML = `<img src="${item.download_url}"><span>${item.name}</span>`;
+                div.onclick = () => { document.getElementById('ch-icono').value = item.download_url; closeModal('icon-modal'); };
+                grid.appendChild(div);
+            });
+        } catch (e) { novaToast("Error fetching icons", "error"); document.getElementById('icon-loader').style.display = 'none'; }
+    }
+
+    function filterChannels() { renderChannels(document.getElementById('channel-search').value); }
+    function openCategoryModal(index = -1) {
+        document.getElementById('edit-category-index').value = index;
+        document.getElementById('cat-title').value = index >= 0 ? catalogo[index].title : '';
+        document.getElementById('category-modal').style.display = 'flex';
+    }
+    function saveCategory() {
+        const index = parseInt(document.getElementById('edit-category-index').value);
+        const title = document.getElementById('cat-title').value.trim();
+        if (!title) return;
+        if (index >= 0) { catalogo[index].title = title; }
+        else { catalogo.push({ title, items: [] }); currentCategoryIndex = catalogo.length - 1; }
+        closeModal('category-modal');
+        renderCategories();
+    }
+    async function deleteCategory(index) {
+        if (await openModal("Eliminar Categoría", `¿Estás seguro de eliminar esta categoría ("${catalogo[index].title}") y todos sus canales?`)) {
+            catalogo.splice(index, 1);
+            currentCategoryIndex = -1;
+            renderCategories();
+            novaToast("Categoría eliminada.");
+        }
+    }
+
+    function copyCategory(index) {
+        const original = catalogo[index];
+        const copy = JSON.parse(JSON.stringify(original));
+        copy.title = copy.title + " (Copia)";
+        // Insertar después de la original
+        catalogo.splice(index + 1, 0, copy);
+        renderCategories();
+        novaToast(`Copia de "${original.title}" creada.`);
+    }
+
+    function openChannelModal(chIndex = -1, catIndex = currentCategoryIndex) {
+        if (catalogo.length === 0) return novaToast('Cree una categoría primero', 'info');
+        if (catIndex < 0 && chIndex === -1) return novaToast('Seleccione una categoría primero', 'info');
+        document.getElementById('edit-channel-index').value = chIndex;
+        document.getElementById('edit-channel-cat-index').value = catIndex;
+        const ch = (chIndex >= 0 && catalogo[catIndex]) ? catalogo[catIndex].items[chIndex] : {
+            name: '', info: '', icono: '', status: 'true', NSFW: 'NO',
+            url: '', url2: '', Referer: '', Origin: '', 'User-Agent': '',
+            drm_license_uri: '', drm_license_uri2: ''
+        };
+        document.getElementById('ch-name').value = ch.name || '';
+        document.getElementById('ch-info').value = ch.info || '';
+        document.getElementById('ch-icono').value = ch.icono || '';
+        document.getElementById('ch-status').value = String(ch.status) || 'true';
+        document.getElementById('ch-nsfw').value = ch.NSFW || 'NO';
+        document.getElementById('ch-url').value = ch.url || '';
+        document.getElementById('ch-url2').value = ch.url2 || '';
+        document.getElementById('ch-referer').value = ch.Referer || '';
+        document.getElementById('ch-origin').value = ch.Origin || '';
+        document.getElementById('ch-user').value = ch['User-Agent'] || '';
+        document.getElementById('ch-type').value = ch.type || 'CLEARKEY';
+        document.getElementById('ch-drm1').value = ch.drm_license_uri || '';
+        document.getElementById('ch-drm2').value = ch.drm_license_uri2 || '';
+        document.getElementById('ch-epg-id').value = ch.epg_id || '';
+        document.getElementById('ch-epg-url').value = ch.epg_url || '';
+
+        // Mostrar campos extra solo si tienen datos
+        document.getElementById('url2-container').style.display = ch.url2 ? 'block' : 'none';
+        document.getElementById('drm2-container').style.display = ch.drm_license_uri2 ? 'block' : 'none';
+
+        document.getElementById('modal-title').innerText = chIndex >= 0 ? 'Editar Canal' : 'Nuevo Canal';
+        document.getElementById('channel-modal').style.display = 'flex';
+    }
+
+    function toggleExtraField(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function copyAndMoveChannel() {
+        const chIndex = parseInt(document.getElementById('edit-channel-index').value);
+        const catIndex = parseInt(document.getElementById('edit-channel-cat-index').value);
+        if (chIndex < 0) return;
+
+        const ch = JSON.parse(JSON.stringify(catalogo[catIndex].items[chIndex]));
+
+        const catOptions = catalogo.map((c, i) => ({ value: i, text: c.title }));
+        const targetCatIdx = await openModal("Copiar y Mover", `Seleccione la categoría de destino para una copia de "${ch.name}":`, "select", catOptions);
+
+        if (targetCatIdx !== false) {
+            const targetIdx = parseInt(targetCatIdx);
+            catalogo[targetIdx].items.push(ch);
+            closeModal('channel-modal');
+            renderChannels();
+            novaToast(`Copia de "${ch.name}" movida a "${catalogo[targetIdx].title}"`);
+        }
+    }
+
+    function saveChannel() {
+        const chIndex = parseInt(document.getElementById('edit-channel-index').value);
+        const catIndex = parseInt(document.getElementById('edit-channel-cat-index').value);
+        const existingCh = (chIndex >= 0 && catalogo[catIndex]) ? catalogo[catIndex].items[chIndex] : {};
+        const info = document.getElementById('ch-info').value.trim();
+        const url = document.getElementById('ch-url').value.trim();
+
+        const ch = {
+            ...existingCh,
+            name: document.getElementById('ch-name').value.trim(),
+            info: info,
+            "CH-events": (info.toUpperCase() === "EVENTOS") ? "yes" : "",
+            icono: document.getElementById('ch-icono').value.trim(),
+            status: document.getElementById('ch-status').value,
+            NSFW: document.getElementById('ch-nsfw').value,
+            url: url,
+            url2: document.getElementById('ch-url2').value.trim(),
+            Referer: document.getElementById('ch-referer').value.trim(),
+            Origin: document.getElementById('ch-origin').value.trim(),
+            'User-Agent': document.getElementById('ch-user').value.trim(),
+            type: document.getElementById('ch-type').value,
+            drm_license_uri: document.getElementById('ch-drm1').value.trim(),
+            drm_license_uri2: document.getElementById('ch-drm2').value.trim(),
+            epg_id: document.getElementById('ch-epg-id').value.trim(),
+            epg_url: document.getElementById('ch-epg-url').value.trim()
+        };
+
+        // FASE REPARACIÓN (v86): Auto-detección de motor Flow por URL (Modo Estricto)
+        if (url.startsWith("https://flow-cdn-gcp.app.flow.com.ar/")) {
+            ch.flow = "yes";
+        } else {
+            delete ch.flow;
+        }
+
+        if (!ch.name) return novaToast('Nombre obligatorio', 'error');
+        if (chIndex >= 0) { catalogo[catIndex].items[chIndex] = ch; }
+        else { catalogo[catIndex].items.push(ch); }
+        closeModal('channel-modal');
+        renderChannels();
+    }
+
+    async function deleteChannel() {
+        const chIndex = parseInt(document.getElementById('edit-channel-index').value);
+        const catIndex = parseInt(document.getElementById('edit-channel-cat-index').value);
+        if (chIndex < 0) return;
+
+        const ch = catalogo[catIndex].items[chIndex];
+        if (!(await openModal("Eliminar Canal", `¿Estás seguro de eliminar el canal "${ch.name}"?`))) return;
+
+        // --- LÓGICA DE LIMPIEZA DE ICONO ---
+        const iconoUrl = ch.icono || "";
+        const fileName = iconoUrl.split('/').pop();
+
+        if (fileName && fileName.toLowerCase().endsWith('.webp') && iconoUrl.includes('novaimg/icons/')) {
+            // Contar usos del icono en todo el catálogo
+            let usos = 0;
+            catalogo.forEach(cat => {
+                (cat.items || []).forEach(item => {
+                    if (item.icono === iconoUrl) usos++;
+                });
+            });
+
+            if (usos === 1) {
+                if (await openModal("Limpieza de Icono", `Este icono ("${fileName}") ya no será usado por ningún otro canal. ¿Deseas eliminarlo también de GitHub para ahorrar espacio?`)) {
+                    await fetchJSON({
+                        action: "seguridad_eliminar_archivo_github",
+                        repo: "novaimg",
+                        path: "icons/" + fileName
+                    }, true);
+                    novaToast(`Icono "${fileName}" eliminado de la galería.`);
+                }
+            }
+        }
+        // -----------------------------------
+
+        catalogo[catIndex].items.splice(chIndex, 1);
+        closeModal('channel-modal');
+        renderChannels();
+        novaToast("Canal eliminado localmente.");
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    /* NovaModal Premium */
+    function openModal(title, msg, type = "confirm", options = [], defaultValue = "") {
+        return new Promise((resolve) => {
+            const m = document.getElementById("novaModal");
+            if (!m) return resolve(false);
+
+            document.getElementById("novaModalTitle").innerText = title;
+            document.getElementById("novaModalMessage").innerText = msg;
+
+            const inputContainer = document.getElementById("modalInputContainer");
+            const input = document.getElementById("modalInput");
+            const select = document.getElementById("modalSelect");
+
+            if (inputContainer) inputContainer.classList.add("hidden");
+            if (input) input.classList.add("hidden");
+            if (select) select.classList.add("hidden");
+
+            if (type === "prompt") {
+                if (inputContainer) inputContainer.classList.remove("hidden");
+                if (input) {
+                    input.classList.remove("hidden");
+                    input.value = defaultValue;
+                    setTimeout(() => input.focus(), 100);
+                }
+            } else if (type === "select") {
+                if (inputContainer) inputContainer.classList.remove("hidden");
+                if (select) {
+                    select.classList.remove("hidden");
+                    select.innerHTML = options.map(o => `<option value="${o.value}">${o.text}</option>`).join('');
+                    setTimeout(() => select.focus(), 100);
+                }
+            }
+
+            m.style.display = "flex";
+
+            document.getElementById("novaModalCancel").onclick = () => {
+                m.style.display = "none";
+                resolve(false);
+            };
+            document.getElementById("novaModalConfirm").onclick = () => {
+                m.style.display = "none";
+                if (type === "prompt") resolve(input.value);
+                else if (type === "select") resolve(select.value);
+                else resolve(true);
+            };
+        });
+    }
+
+    document.getElementById("password").addEventListener("keydown", e => { if (e.key === "Enter") iniciarSesion(); });
+
+    // Toggle Menú Móvil
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // Cerrar menú al clickear link (móvil)
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navToggle) navToggle.classList.remove('active');
+            if (navLinks) navLinks.classList.remove('active');
+        });
+    });
+
+    // --- SISTEMA DE CONEXIÓN SEGURA NOVACONNECT ---
+    const CONNECTOR_URL = "https://mrghnngupolsgatcmevw.supabase.co/functions/v1/access_connector";
+    const APP_USER = "novaplay";
+
+    async function fetchSafeData(action, isBeta = false) {
+        try {
+            const authRes = await fetch(CONNECTOR_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: "obtener_credenciales", usuario: APP_USER })
+            });
+            const credentials = await authRes.json();
+            const authHeader = "Basic " + btoa(`${APP_USER}:${credentials.password}`);
+
+            const dataRes = await fetch(CONNECTOR_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authHeader
+                },
+                body: JSON.stringify({ action: action, beta: isBeta })
+            });
+            return await dataRes.json();
+        } catch (e) {
+            console.error("Error en conexión segura:", e);
+            return null;
+        }
+    }
+
+    // System Status Badge
+    async function checkSystemStatus() {
+        const data = await fetchSafeData("obtener_mantenimiento");
+        const badge = document.getElementById('statusBadge');
+        if (!badge) return;
+
+        if (data && data.success === true) {
+            badge.style.color = '#ffd700';
+            badge.innerText = "⚠️ MANTENIMIENTO";
+        } else if (data) {
+            badge.style.color = '#4caf50';
+            badge.innerText = "🟢 OPERATIVO";
+        } else {
+            badge.innerText = "🚨 ERROR";
+        }
+    }
+
+    checkSystemStatus();
+    restaurarSesion();
+</script>
+</body>
+</html>
