@@ -7,7 +7,7 @@
   "background_color": "#080a10",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp",
+      "src": "https://raw.githubusercontent.com/novaplaygo/novaimg/main/novasplash.webp",
       "sizes": "512x512",
       "type": "image/webp",
       "purpose": "any maskable"

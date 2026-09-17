@@ -4,7 +4,7 @@ const ASSETS_TO_CACHE = [
   './index.html',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
-  'https://raw.githubusercontent.com/NovaplayGO/novaimg/main/novasplash.webp'
+  'https://raw.githubusercontent.com/novaplaygo/novaimg/main/novasplash.webp'
 ];
 
 self.addEventListener('install', event => {
