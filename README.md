@@ -31,4 +31,4 @@ Gestor web avanzado para la administración centralizada de canales, categorías
 
 ---
 **Desarrollado por MSGT**  
-© 2026 NovaPlay TV - Infraestructura de Contenidos.
+© 2026 NovaPlay GO - Infraestructura de Contenidos.
