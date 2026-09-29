@@ -1275,14 +1275,24 @@
             return;
         }
 
-        if (await openModal("Desactivar Categoría", `¿Desea desactivar todos los canales pertenecientes a la categoría "${cat.title}"?`)) {
+        const allInactive = cat.items.every(ch => String(ch.status) === 'false');
+        const targetStatus = allInactive ? 'true' : 'false';
+        const actionTitle = allInactive ? "Activar Categoría" : "Desactivar Categoría";
+        const actionMsg = allInactive
+            ? `¿Desea activar todos los canales pertenecientes a la categoría "${cat.title}"?`
+            : `¿Desea desactivar todos los canales pertenecientes a la categoría "${cat.title}"?`;
+
+        if (await openModal(actionTitle, actionMsg)) {
             cat.items.forEach(ch => {
-                ch.status = 'false';
+                ch.status = targetStatus;
             });
             renderChannels();
             updateStats();
             marcarCambios();
-            novaToast(`Canales de "${cat.title}" desactivados correctamente.`, 'success');
+            const successMsg = allInactive
+                ? `Canales de "${cat.title}" activados correctamente.`
+                : `Canales de "${cat.title}" desactivados correctamente.`;
+            novaToast(successMsg, 'success');
         }
     }
 
