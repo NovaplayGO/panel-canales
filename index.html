@@ -991,6 +991,7 @@
             item.innerHTML = `
                 <span><i class="fas fa-folder"></i> ${cat.title}</span>
                 <div class="actions">
+                    <button class="btn-icon" onclick="toggleCategoryPower(event, ${index})" title="Apagar Categoría (Desactivar Canales)" style="color: #ef4444;"><i class="fas fa-power-off"></i></button>
                     <button class="btn-icon" onclick="copyCategory(${index})" title="Copiar Categoría"><i class="fas fa-copy"></i></button>
                     <button class="btn-icon" onclick="openCategoryModal(${index})" title="Editar"><i class="fas fa-edit"></i></button>
                     <button class="btn-icon" onclick="deleteCategory(${index})" title="Eliminar"><i class="fas fa-trash"></i></button>
@@ -1263,6 +1264,25 @@
             currentCategoryIndex = -1;
             renderCategories();
             novaToast("Categoría eliminada.");
+        }
+    }
+
+    function toggleCategoryPower(event, index) {
+        event.stopPropagation();
+        const cat = catalogo[index];
+        if (!cat || !cat.items || cat.items.length === 0) {
+            novaToast('La categoría está vacía', 'info');
+            return;
+        }
+
+        if (confirm(`¿Desactivar TODOS los canales de la categoría "${cat.title}" de golpe?`)) {
+            cat.items.forEach(ch => {
+                ch.status = 'false';
+            });
+            renderChannels();
+            updateStats();
+            marcarCambios();
+            novaToast(`¡Canales de "${cat.title}" desactivados!`, 'success');
         }
     }
 
