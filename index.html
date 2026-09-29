@@ -1267,7 +1267,7 @@
         }
     }
 
-    function toggleCategoryPower(event, index) {
+    async function toggleCategoryPower(event, index) {
         event.stopPropagation();
         const cat = catalogo[index];
         if (!cat || !cat.items || cat.items.length === 0) {
@@ -1275,14 +1275,14 @@
             return;
         }
 
-        if (confirm(`¿Desactivar TODOS los canales de la categoría "${cat.title}" de golpe?`)) {
+        if (await openModal("Desactivar Categoría", `¿Desea desactivar todos los canales pertenecientes a la categoría "${cat.title}"?`)) {
             cat.items.forEach(ch => {
                 ch.status = 'false';
             });
             renderChannels();
             updateStats();
             marcarCambios();
-            novaToast(`¡Canales de "${cat.title}" desactivados!`, 'success');
+            novaToast(`Canales de "${cat.title}" desactivados correctamente.`, 'success');
         }
     }
 
