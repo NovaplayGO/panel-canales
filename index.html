@@ -1344,10 +1344,12 @@
         document.getElementById('ch-epg-id').value = ch.epg_id || '';
         document.getElementById('ch-epg-url').value = ch.epg_url || '';
 
-        // Mostrar campos extra solo si tienen datos y selector de eventos solo en la categoría Avisos (-3)
+        // Mostrar campos extra solo si tienen datos y selector de eventos solo en categorías con título "EVENTOS"
         document.getElementById('url2-container').style.display = ch.url2 ? 'block' : 'none';
         document.getElementById('drm2-container').style.display = ch.drm_license_uri2 ? 'block' : 'none';
-        document.getElementById('evento-container').style.display = (catIndex === -3) ? 'block' : 'none';
+        const cat = (catIndex >= 0 && catalogo[catIndex]) ? catalogo[catIndex] : null;
+        const isEventCategory = cat && cat.title && cat.title.toUpperCase() === "EVENTOS";
+        document.getElementById('evento-container').style.display = isEventCategory ? 'block' : 'none';
 
         document.getElementById('modal-title').innerText = chIndex >= 0 ? 'Editar Canal' : 'Nuevo Canal';
         document.getElementById('channel-modal').style.display = 'flex';
