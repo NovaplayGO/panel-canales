@@ -520,6 +520,17 @@
                             <option value="YES">YES</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Tipo de Evento / Logo</label>
+                        <select id="ch-evento-type">
+                            <option value="no">Desactivado (Normal)</option>
+                            <option value="yes">Estándar (EVENTOS)</option>
+                            <option value="eventos1">Variante 1 (Base)</option>
+                            <option value="eventos2">Variante 2 (NS2)</option>
+                            <option value="eventos3">Variante 3 (NS3)</option>
+                            <option value="eventos4">Variante 4 (NS4)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -1321,6 +1332,7 @@
         document.getElementById('ch-icono').value = ch.icono || '';
         document.getElementById('ch-status').value = String(ch.status) || 'true';
         document.getElementById('ch-nsfw').value = ch.NSFW || 'NO';
+        document.getElementById('ch-evento-type').value = ch.evento || 'no';
         document.getElementById('ch-url').value = ch.url || '';
         document.getElementById('ch-url2').value = ch.url2 || '';
         document.getElementById('ch-referer').value = ch.Referer || '';
@@ -1371,11 +1383,13 @@
         const info = document.getElementById('ch-info').value.trim();
         const url = document.getElementById('ch-url').value.trim();
 
+        const eventoVal = document.getElementById('ch-evento-type').value;
         const ch = {
             ...existingCh,
             name: document.getElementById('ch-name').value.trim(),
             info: info,
-            "CH-events": (info.toUpperCase() === "EVENTOS") ? "yes" : "",
+            "CH-events": eventoVal !== 'no' ? "yes" : "no",
+            evento: eventoVal,
             icono: document.getElementById('ch-icono').value.trim(),
             status: document.getElementById('ch-status').value,
             NSFW: document.getElementById('ch-nsfw').value,
