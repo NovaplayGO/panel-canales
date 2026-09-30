@@ -520,7 +520,7 @@
                             <option value="YES">YES</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="evento-container">
                         <label>Tipo de Evento / Logo</label>
                         <select id="ch-evento-type">
                             <option value="no">Desactivado (Normal)</option>
@@ -1344,9 +1344,10 @@
         document.getElementById('ch-epg-id').value = ch.epg_id || '';
         document.getElementById('ch-epg-url').value = ch.epg_url || '';
 
-        // Mostrar campos extra solo si tienen datos
+        // Mostrar campos extra solo si tienen datos y selector de eventos solo en la categoría Avisos (-3)
         document.getElementById('url2-container').style.display = ch.url2 ? 'block' : 'none';
         document.getElementById('drm2-container').style.display = ch.drm_license_uri2 ? 'block' : 'none';
+        document.getElementById('evento-container').style.display = (catIndex === -3) ? 'block' : 'none';
 
         document.getElementById('modal-title').innerText = chIndex >= 0 ? 'Editar Canal' : 'Nuevo Canal';
         document.getElementById('channel-modal').style.display = 'flex';
