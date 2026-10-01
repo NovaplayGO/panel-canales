@@ -1383,16 +1383,19 @@
         const chIndex = parseInt(document.getElementById('edit-channel-index').value);
         const catIndex = parseInt(document.getElementById('edit-channel-cat-index').value);
         const existingCh = (chIndex >= 0 && catalogo[catIndex]) ? catalogo[catIndex].items[chIndex] : {};
+        const cat = catalogo[catIndex];
+        const isEventCat = cat && cat.title && cat.title.toUpperCase() === "EVENTOS";
         const info = document.getElementById('ch-info').value.trim();
         const url = document.getElementById('ch-url').value.trim();
 
-        const eventoVal = document.getElementById('ch-evento-type').value;
+        const eventoVal = isEventCat ? document.getElementById('ch-evento-type').value : 'no';
+
         const ch = {
             ...existingCh,
             name: document.getElementById('ch-name').value.trim(),
             info: info,
-            "CH-events": eventoVal !== 'no' ? "yes" : "no",
-            evento: eventoVal,
+            "CH-events": isEventCat ? "yes" : "no",
+            evento: isEventCat ? eventoVal : "no",
             icono: document.getElementById('ch-icono').value.trim(),
             status: document.getElementById('ch-status').value,
             NSFW: document.getElementById('ch-nsfw').value,
@@ -1407,6 +1410,10 @@
             epg_id: document.getElementById('ch-epg-id').value.trim(),
             epg_url: document.getElementById('ch-epg-url').value.trim()
         };
+
+        if (!isEventCat) {
+            delete ch.evento;
+        }
 
         // FASE REPARACIÓN (v86): Auto-detección de motor Flow por URL (Modo Estricto)
         if (url.startsWith("https://flow-cdn-gcp.app.flow.com.ar/")) {
