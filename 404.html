@@ -41,7 +41,7 @@ if(Math.random()<0.25){
 
 <script>
 function abrirNovaSports(){
-  const url='https://novaplaygo.github.io/NovaSports/';
+  const url='#';
   const w=Math.min(1280,Math.max(800,Math.round(screen.availWidth*.9)));
   const h=Math.min(820,Math.max(600,Math.round(screen.availHeight*.86)));
   const left=Math.max(0,Math.round((screen.availWidth-w)/2));
@@ -58,7 +58,7 @@ function pedirDemoPopup(){
   document.getElementById('demo-popup-cancel').addEventListener('click',()=>document.getElementById('demo-popup-permission').remove());
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('a[href="https://novaplaygo.github.io/NovaSports/"]').forEach(a=>{
+  document.querySelectorAll('a[href="#"]').forEach(a=>{
     a.addEventListener('click',e=>{e.preventDefault();pedirDemoPopup();});
   });
 });
