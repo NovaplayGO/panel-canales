@@ -521,14 +521,16 @@
                             <option value="YES">YES</option>
                         </select>
                     </div>
-                    <div class="form-group" id="evento-container">
+                    <div class="form-group" id="evento-container" style="display: none;">
                         <label>Tipo de Evento / Logo</label>
                         <select id="ch-evento-type">
                             <option value="no">Desactivado (Normal)</option>
                             <option value="yes">Estándar (Casual)</option>
                             <option value="eventos1">Evento 1 (Base)</option>
                         </select>
-                        <label style="margin-top: 10px;">Agregar "CH-events"</label>
+                    </div>
+                    <div class="form-group" id="ch-events-container" style="display: none;">
+                        <label>Agregar "CH-events"</label>
                         <select id="ch-events-option">
                             <option value="yes">Sí ("CH-events": "yes")</option>
                             <option value="no">No ("CH-events": "no")</option>
@@ -1331,6 +1333,9 @@
             url: '', url2: '', Referer: '', Origin: '', 'User-Agent': '',
             drm_license_uri: '', drm_license_uri2: ''
         };
+        const cat = (catIndex >= 0 && catalogo[catIndex]) ? catalogo[catIndex] : null;
+        const isEventCategory = cat && cat.title && cat.title.toUpperCase() === "EVENTOS";
+
         document.getElementById('ch-name').value = ch.name || '';
         document.getElementById('ch-info').value = ch.info || '';
         document.getElementById('ch-icono').value = ch.icono || '';
@@ -1352,9 +1357,8 @@
         // Mostrar campos extra solo si tienen datos y selector de eventos solo en categorías con título "EVENTOS"
         document.getElementById('url2-container').style.display = ch.url2 ? 'block' : 'none';
         document.getElementById('drm2-container').style.display = ch.drm_license_uri2 ? 'block' : 'none';
-        const cat = (catIndex >= 0 && catalogo[catIndex]) ? catalogo[catIndex] : null;
-        const isEventCategory = cat && cat.title && cat.title.toUpperCase() === "EVENTOS";
         document.getElementById('evento-container').style.display = isEventCategory ? 'block' : 'none';
+        document.getElementById('ch-events-container').style.display = isEventCategory ? 'block' : 'none';
 
         document.getElementById('modal-title').innerText = chIndex >= 0 ? 'Editar Canal' : 'Nuevo Canal';
         document.getElementById('channel-modal').style.display = 'flex';
