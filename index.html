@@ -528,6 +528,12 @@
                             <option value="yes">Estándar (Casual)</option>
                             <option value="eventos1">Evento 1 (Base)</option>
                         </select>
+                        <label style="margin-top: 10px;">Agregar "CH-events"</label>
+                        <select id="ch-events-option">
+                            <option value="yes">Sí ("CH-events": "yes")</option>
+                            <option value="no">No ("CH-events": "no")</option>
+                            <option value="none">Omitir (No incluir)</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -1331,6 +1337,7 @@
         document.getElementById('ch-status').value = String(ch.status) || 'true';
         document.getElementById('ch-nsfw').value = ch.NSFW || 'NO';
         document.getElementById('ch-evento-type').value = ch.evento || 'no';
+        document.getElementById('ch-events-option').value = ch['CH-events'] || (isEventCategory ? 'yes' : 'no');
         document.getElementById('ch-url').value = ch.url || '';
         document.getElementById('ch-url2').value = ch.url2 || '';
         document.getElementById('ch-referer').value = ch.Referer || '';
@@ -1387,12 +1394,12 @@
         const url = document.getElementById('ch-url').value.trim();
 
         const eventoVal = isEventCat ? document.getElementById('ch-evento-type').value : 'no';
+        const eventsOption = isEventCat ? document.getElementById('ch-events-option').value : 'no';
 
         const ch = {
             ...existingCh,
             name: document.getElementById('ch-name').value.trim(),
             info: info,
-            "CH-events": isEventCat ? "yes" : "no",
             evento: isEventCat ? eventoVal : "no",
             icono: document.getElementById('ch-icono').value.trim(),
             status: document.getElementById('ch-status').value,
@@ -1409,7 +1416,14 @@
             epg_url: document.getElementById('ch-epg-url').value.trim()
         };
 
-        if (!isEventCat) {
+        if (isEventCat) {
+            if (eventsOption === 'none') {
+                delete ch["CH-events"];
+            } else {
+                ch["CH-events"] = eventsOption;
+            }
+        } else {
+            ch["CH-events"] = "no";
             delete ch.evento;
         }
 
