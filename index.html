@@ -1098,6 +1098,7 @@
                     const chs = catalogo[currentCategoryIndex].items;
                     const movedItem = chs.splice(evt.oldIndex, 1)[0];
                     chs.splice(evt.newIndex, 0, movedItem);
+                    renderChannels(document.getElementById('channel-search').value);
                 }
             });
         }
@@ -1134,14 +1135,28 @@
         const targetIdx = parseInt(target);
         if (isNaN(targetIdx) || !catalogo[targetIdx]) return;
 
-        // Process in reverse to avoid index shifts if multiple from same cat
-        selectedChannels.sort((a, b) => b.chIdx - a.chIdx).forEach(s => {
-            const ch = catalogo[s.catIdx].items.splice(s.chIdx, 1)[0];
-            catalogo[targetIdx].items.push(ch);
+        // Agrupar por categoría de origen para evitar conflictos de índices entre diferentes categorías
+        const grouped = {};
+        selectedChannels.forEach(s => {
+            if (!grouped[s.catIdx]) grouped[s.catIdx] = [];
+            grouped[s.catIdx].push(s.chIdx);
         });
+
+        const movedChannels = [];
+        Object.keys(grouped).forEach(catIdxStr => {
+            const catIdx = parseInt(catIdxStr);
+            const chIndices = grouped[catIdx].sort((a, b) => b - a); // Descendente dentro de cada categoría
+            chIndices.forEach(chIdx => {
+                const ch = catalogo[catIdx].items.splice(chIdx, 1)[0];
+                if (ch) movedChannels.push(ch);
+            });
+        });
+
+        catalogo[targetIdx].items.push(...movedChannels);
         clearSelection();
         renderCategories();
-        novaToast(`${selectedChannels.length} canales movidos a "${catalogo[targetIdx].title}"`);
+        renderChannels(document.getElementById('channel-search').value);
+        novaToast(`${movedChannels.length} canales movidos a "${catalogo[targetIdx].title}"`);
     }
 
     function bulkCopy() {
