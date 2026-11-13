@@ -1573,20 +1573,13 @@
     });
 
     // --- SISTEMA DE CONEXIÓN SEGURA NOVACONNECT ---
-    const CONNECTOR_URL = "https://mrghnngupolsgatcmevw.supabase.co/functions/v1/access_connector";
     const APP_USER = "novaplay";
+    const APP_PASS = "novaplay@novaplay";
 
     async function fetchSafeData(action, isBeta = false) {
         try {
-            const authRes = await fetch(CONNECTOR_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: "obtener_credenciales", usuario: APP_USER })
-            });
-            const credentials = await authRes.json();
-            const authHeader = "Basic " + btoa(`${APP_USER}:${credentials.password}`);
-
-            const dataRes = await fetch(CONNECTOR_URL, {
+            const authHeader = "Basic " + btoa(`${APP_USER}:${APP_PASS}`);
+            const dataRes = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
